@@ -24,7 +24,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 		<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
 		<meta content="utf-8" http-equiv="encoding" />
-		<meta name="copyright" content="&copy; 2024 Steve Seguin" />
+		<meta name="copyright" content="&copy; 2023 Steve Seguin" />
 		<meta name="license" content="https://github.com/steveseguin/vdo.ninja/LICENSE.md" />
 		<meta name="sourcecode" content="https://github.com/steveseguin/vdo.ninja" />
 		<meta name="stance-on-war" content="Steve Seguin condemns Russia's brutal invasion of Ukraine 💙💛." />
@@ -58,7 +58,7 @@
 		<meta property="twitter:image" content="./media/vdoNinja_logo_full.png" />
 		<meta name="msapplication-TileColor" content="#da532c" />
 		<meta name="theme-color" content="#0f131d" />
-		<link rel="stylesheet" href="./main.css?ver=379" />
+		<link rel="stylesheet" href="./main.css?ver=368" />
 		<script type="text/javascript" crossorigin="anonymous" src="./thirdparty/adapter.js"></script>
 		<style id="lightbox-animations" type="text/css"></style>
 		
@@ -90,9 +90,9 @@
 			<link itemprop="url" href="./media/vdoNinja_logo_full.png" />
 		</span>
 		
-		<script type="text/javascript" crossorigin="anonymous"  src="./thirdparty/CodecsHandler.js?ver=10"></script>
+		<script type="text/javascript" crossorigin="anonymous"  src="./thirdparty/CodecsHandler.js?ver=6"></script>
 		<script type="text/javascript" crossorigin="anonymous" src="./thirdparty/aes.js"></script>
-		<script type="text/javascript" crossorigin="anonymous" src="./webrtc.js?ver=781"></script>
+		<script type="text/javascript" crossorigin="anonymous" src="./webrtc.js?ver=732"></script>
 		<input id="zoomSlider" type="range" style="display: none;" />
 		<span id="electronDragZone" style="pointer-events: none; z-index:-10; position:absolute;top:0;left:0;width:100%;height:2%;-webkit-app-region: drag;min-height:20px;"></span>
 		<div id="header">
@@ -145,9 +145,9 @@
 			<div id="head7" class="hidden" data-translate="director-muted-you">The director has muted you.</div>
 			<div id="head8" class="hidden" data-translate="director-video-muted-you">The director has disabled your camera temporarily.</div>
 		</div>
-		 <div id="obsState" class="hidden" >ACTIVE</div>
 		<div id="controlButtons" class="hidden">
             <div class="controlPositioning">
+                <div id="obsState" class="hidden" >ACTIVE</div>
                 <div id="chatModule" class="hidden">
                     <a target="popup" id="popOutChat" onclick="createPopoutChat();"><i class="las la-external-link-alt"></i></a>
                     <div id="chatBody"> 
@@ -321,7 +321,7 @@
 									</b>
 								</div>
 								<input type="text" autocorrect="off" autocapitalize="none"  id="videoname1" placeholder="Enter a room name here" onkeydown="checkStrengthRoom(event, 'securityLevelRoom');" onchange="checkStrengthRoom(event, 'securityLevelRoom');" onkeyup="enterPressed(event, createRoom);" maxlength="30" style="max-width: 431px;width: 100%;font-size: 110%; padding: 5px;" />
-								<button ontouchstart="getById('videoname1').value = session.generateRandomString();getById('securityLevelRoom').style.display='none';" onmousedown="getById('videoname1').value = session.generateRandomString();getById('securityLevelRoom').style.display='none';" title="Generate a random room name" class="randomRoomName"><i class="las la-random"></i></button>
+								<button onclick="getById('videoname1').value = session.generateRandomString();getById('securityLevelRoom').style.display='none';" title="Generate a random room name" class="randomRoomName"><i class="las la-random"></i></button>
 								<div id="securityLevelRoom" style="display:none;margin-top:3px;position:relative;top:3px;font-size:0.8em;"></div>
 							</th>
 							
@@ -431,7 +431,7 @@
 						<span data-translate="ask-for-permissions">Allow Access to Camera/Microphone</span>
 					</button>
 					<span style="display:block;">
-						<button onclick="publishWebcam(this)" title="Start streaming (Alt + s)" aria-label="Start streaming (Alt + s)" role="button" aria-pressed="false" tabindex="1" id="gowebcam" class="gowebcam" alt="Start Streaming  (Alt + s)" disabled data-audioready="false" data-ready="false" >
+						<button onclick="publishWebcam(this)" title="start streaming" aria-label="Start streaming" role="button" aria-pressed="false" tabindex="1" id="gowebcam" class="gowebcam" alt="Start Streaming" disabled data-audioready="false" data-ready="false" >
 							<span data-translate="waiting-for-camera">Waiting for Camera to Load</span>
 						</button>
 					</span>
@@ -464,16 +464,9 @@
 					<center>
 						<div id="videoSettings" style="display: none;" aria-hidden="true">
 							<form id="webcamquality">
-								<span class="hidden">
-									<input type="radio" id="4kquality" alt="2160p60 video capture" name="resolution" value="-2" />
-									<label for="4kquality">
-										<span data-translate="up-to-4k">4K</span>
-									</label> |
-								</span>
-								
 								<input type="radio" id="fullhd" alt="1080p60 video capture" name="resolution" value="0" />
 								<label for="fullhd">
-									<span data-translate="max-resolution">High Resolution</span>
+									<span data-translate="max-resolution">Max Resolution</span>
 								</label> |
 								
 								<input type="radio" checked id="halfhd" alt="720p60 video capture"  name="resolution" value="1" />
@@ -513,6 +506,7 @@
 							<p><span id="audioTipContext1"></span></p>
 						</div>
 					</div>
+					
 					<br style="line-height: 0;" />
 					<div id="headphonesDiv" class="audioMenu" aria-hidden="true">
 						<div class="title">
@@ -586,13 +580,6 @@
                         <input type="text" id="passwordBasicInput" title="Enter an optional password here" placeholder="optional"/>
                     </div>
 					
-					<br style="line-height: 0;" />
-					<div id="rememberStreamID" class="hidden" style="display:inline-block;" title="Remember and reuse the provided stream ID on each visit">
-						<br />
-						<br style="line-height: 0;" />
-                        Remember Stream ID: <input type="checkbox" id="rememberStreamIDcheck" checked="true" />
-                    </div>
-					
 					<div id="SafariWarning" class="startupWarning hidden" aria-hidden="true" title="Consider using Chrome instead of Safari">
 						<i class="las la-exclamation-circle"></i>
 						<p><span data-translate="use-chrome-instead">Consider using a Chromium-based browser instead.<br />
@@ -601,7 +588,7 @@
 					
 					<div id="oldiOSWarning" class="startupWarning hidden" title="Please update your version of iOS for best performance">
 						<i class="las la-exclamation-circle"></i>
-						<p><span data-translate="update-your-device">We've detected that you are using an old version of Apple iOS.<br /><br />Please consider updating if facing issues.</span></p>
+						<p><span data-translate="update-your-device">We've detected that you are using an old version of Apple iOS, which is known to have many issues.<br /><br />Please consider updating.</span></p>
 					</div>
 					
 				</div>
@@ -1007,22 +994,22 @@
 							</i>
 							<br />
 							<li>
-								Starting OBS in Administrator mode has resolved a couple recent user issues related to Windows Firewall P2P blocking and video/audio degraded performance issues.
-							</li>
-							<li>
 								If the video fails to load in OBS Studio, where the browser source remains blank, try disabling hardware-acceleration or 
 								<a href='https://docs.vdo.ninja/common-errors-and-known-issues/obs.ninja-doesnt-show-up-in-obs-or-is-choppy' title="Click to link out to the VDO.Ninja help guide for common OBS Studio problems" target="_blank">refer to this help guide</a> for more.
+							</li>
+							<li>
+								Samsung smartphones (A-series) may fail to publish video with some mobile browsers; try using Firefox Mobile or the native <a href='https://docs.vdo.ninja/getting-started/native-mobile-app-versions#android-download-link' title="Info on the native app versions of VDO.Ninja">Android app</a> in these cases.
 							</li>
 							<br />
 							<h4>
 								<span style="color:#daad09;">Welcome to VDO Ninja! We've rebranded!  Nothing else is changing and we're staying 100% free.</span>
 							</h4>
 							<br />
-							🌱 Site last updated on March 29th.  You can also still access the previous version, which <a href="https://vdo.ninja/v24/">is hosted here</a>. Development <a target="_blank" title="Open a page with recent VDO.Ninja development and feature updates" href="https://updates.vdo.ninja/">updates are here.</a>
+							🍂 Site last updated on September 8th.  You can also still access the previous version, which <a href="https://vdo.ninja/v23/">is hosted here</a>. Development <a target="_blank" title="Open a page with recent VDO.Ninja development and feature updates" href="https://updates.vdo.ninja/">updates are here.</a>
 							<br />
 							<br />
 							<h3>
-							   🛠 For support, join the <a href="https://discord.gg/T4xpQVv" target="_blank">Discord <i class="lab la-discord"></i></a> or see the <a href="https://www.reddit.com/r/VDONinja/" target="_blank">sub-reddit <i class="lab la-reddit-alien"></i></a>. The <a href="https://docs.vdo.ninja/" target="_blank">documentation is here</a> and my personal email is <i>steve@seguin.email</i>
+							   🛠 For support, join the <a href="https://discord.gg/T4xpQVv">Discord <i class="lab la-discord"></i></a> or see the <a href="https://www.reddit.com/r/VDONinja/">sub-reddit <i class="lab la-reddit-alien"></i></a>. The <a href="https://docs.vdo.ninja/">documentation is here</a> and my personal email is <i>steve@seguin.email</i>
 							</h3> 
 								
 						</span>
@@ -1563,7 +1550,7 @@
 					</div>
 
 					<!-- Row of Scenes -->
-					<div class="row six advanced sceneButtons">
+					<div class="row six advanced">
 						<button data-action-type="addToScene" data-scene="3" title="Add to Scene 3" onclick="directEnable(this, event);">
 							<span>S3</span>
 						</button>
@@ -1636,10 +1623,6 @@
 						<button data-action-type="recorder-remote" title="The Remote Guest will record their local stream to their local drive. *experimental*" onclick="requestVideoRecord(this)">
 							<i class="las la-compact-disc"></i>
 							<span data-translate="record-remote"> Record Remote</span>
-						</button>
-						<button data-action-type="recorder-google-drive-remote" title="The Remote Guest will record their local stream to their local drive. *experimental*" onclick="requestGoogleDriveRecord(this)">
-							<i class="las la-compact-disc"></i>
-							<span data-translate="google-drive-record"> Google Drive</span>
 						</button>
 						<button  class="mainonly" data-action-type="change-params" style="display:none" title="Change user parameters" onclick="promptUser('transferSettingsTemplate', this.dataset.UUID);">
 							<i class="las la-cog"></i>
@@ -1806,19 +1789,6 @@
 						<i class="las la-plus"></i>
 					</button>
 				</span>
-				<div class="row two"> 
-                    <!-- Further Audio/Video Settings -->
-                    <div class="row two settingsWrapper" data-cluster="3">
-                        <button data-action-type="advanced-audio-settings" data-active="false" title="Remote Audio Settings" onclick="toggleAudioUser();event.preventDefault();event.stopPropagation();return false;">
-                            <i class="las la-sliders-h"></i>
-                            <span data-translate="advanced-audio-settings">Audio settings</span>
-                        </button>
-                        <button class="mainonly" data-action-type="advanced-camera-settings" data-active="false" title="Advanced Video Settings" onclick="toggleVideoUser();event.preventDefault();event.stopPropagation();return false;">
-                            <i class="las la-sliders-h"></i>
-                            <span data-translate="advanced-camera-settings">Video settings</span>
-                        </button>
-                    </div>
-				</div>
 			</div>	
 		</div>
 		
@@ -1842,7 +1812,7 @@
 						<form id="webcamquality3">
 							<input type="radio" id="fullhd3" name="resolution" value="0" />
 							<label for="fullhd3">
-								<span data-translate="max-resolution">High Quality</span>
+								<span data-translate="max-resolution">Max Resolution</span>
 							</label> |
 							
 							<input type="radio" checked id="halfhd3" name="resolution" value="1" />
@@ -1969,24 +1939,24 @@
 				
 				<span id="popupSelector_user_settings" style="display: none; visibility:hidden">
 					<span class="mobileHide">
-						<label title="Choose a hotkey for Hold-to-Talk. If using Electron Capture, elevate privilleges to have it become global" data-translate="hold-to-talk" >Hold-to-Talk Hot-key</label>
-						<input type="text" id="pptHotKey" placeholder="press a key here" style="padding-left: 7px;" onkeypress="event.preventDefault;event.stopPropagation();return false;" onkeyup="event.preventDefault;event.stopPropagation();return false;" onkeydown="setHotKey();"/>
-						<button onclick="setHotKey(false);" style="margin: 0 0 0 4px; border-radius: 5px; padding: 3px 3px;" data-translate="clear">Clear</button>
+						<label title="Choose a hotkey for Hold-to-Talk. If using Electron Capture, elevate privilleges to have it become global">Hold-to-Talk Hot-key</label>
+						<input type="text" id="pptHotKey"  placeholder="press a key here" style="padding-left: 7px;" onkeypress="event.preventDefault;event.stopPropagation();return false;" onkeyup="event.preventDefault;event.stopPropagation();return false;" onkeydown="setHotKey();"/>
+						<button onclick="setHotKey(false);" style="margin: 0 0 0 4px; border-radius: 5px; padding: 3px 3px;">Clear</button>
 						<br /><br />
 						<label title="Draw on the Screen">Draw-on-Screen</label>
-						<button id='startDrawScreen' title="CTRL (cmd) + ALT + D to toggle" onclick="drawOnScreen();" style="margin: 0 0 0 4px; border-radius: 5px; padding: 3px 3px;" data-translate="enable" >Enable</button>
-						<button class='hidden drawActive' onclick="drawOnScreenObject.erase();" style="margin: 0 0 0 4px; border-radius: 5px; padding: 3px 3px;" data-translate="clear">Clear</button>
-						<button class='hidden drawActive' onclick="drawOnScreenObject.stop();" style="margin: 0 0 0 4px; border-radius: 5px; padding: 3px 3px;" title="CTRL (cmd) + ALT + D to toggle" data-translate="stop">Stop</button>
+						<button id='startDrawScreen' title="CTRL (cmd) + ALT + D to toggle" onclick="drawOnScreen();" style="margin: 0 0 0 4px; border-radius: 5px; padding: 3px 3px;">Enable</button>
+						<button class='hidden drawActive' onclick="drawOnScreenObject.erase();" style="margin: 0 0 0 4px; border-radius: 5px; padding: 3px 3px;">Clear</button>
+						<button class='hidden drawActive' onclick="drawOnScreenObject.stop();" style="margin: 0 0 0 4px; border-radius: 5px; padding: 3px 3px;" title="CTRL (cmd) + ALT + D to toggle" >Stop</button>
 						<button class='hidden drawActive' onclick="drawOnScreenObject.color(this);" data-color='red' style="background-color:red; margin: 0 0 0 4px; border-radius: 5px; padding: 3px 3px;">✏️</button>
 						<button class='hidden drawActive' onclick="drawOnScreenObject.color(this);" data-color='blue' style="background-color:blue; margin: 0 0 0 4px; border-radius: 5px; padding: 3px 3px;">✏️</button>
 						<button class='hidden drawActive' onclick="drawOnScreenObject.color(this);" data-color='green' style="background-color:green; margin: 0 0 0 4px; border-radius: 5px; padding: 3px 3px;">✏️</button>
 						<button class='hidden drawActive' onclick="drawOnScreenObject.color(this);" data-color='black' style="background-color:black; margin: 0 0 0 4px; border-radius: 5px; padding: 3px 3px;">✏️</button>
 						<button class='hidden drawActive' onclick="drawOnScreenObject.color(this);" data-color='white' style="background-color:white; margin: 0 0 0 4px; border-radius: 5px; padding: 3px 3px;">🎨</button>
 						<br /><br />
-						<button class="generalButton" onclick="cycleStyleOptions();" id='toggleWaveformButton' title="Audio-only sources can be stylized in different ways" data-translate="cycle-between-audio-visualizations">Cycle between several audio-visualizations styles</button>
+						<button class="generalButton" onclick="cycleStyleOptions();" id='toggleWaveformButton' title="Audio-only sources can be stylized in different ways">Cycle between several audio-visualizations styles</button>
 						<br />
 					</span>
-					<button class="generalButton" onclick="clearStorage();" title="Clear site's local storage and settings" data-translate="cleaer-sites-local-storage">Clear site's local browser storage and saved settings</button>
+					<button class="generalButton" onclick="clearStorage();" title="Clear site's local storage and settings">Clear site's local browser storage and saved settings</button>
 					
 				</span>
 		</div>
@@ -2276,8 +2246,8 @@
 				<span></span>
 				<h3 data-translate="buffer-settings">Buffer Settings</h3><br />
 				<div>
-					<span data-translate="change-playout-buffer">Buffer (ms): </span><input data-buffer-value='0' style='margin-left: 3px;padding: 2px;width: 60px;' type='number' min='0' max='120000' /><br />
-					<input type='range' min='0' max='10000' data-buffer-value='0' /><br />
+					<span data-translate="change-playout-buffer">Buffer (ms): </span><input style='margin-left: 3px;padding: 2px;width: 60px;' type='number' min='0' max='15000' /><br />
+					<input type='range' min='0' max='15000' /><br />
 				</div>
 			</div>
 		</div>
@@ -2315,19 +2285,19 @@
 							<option value="128">🎙️128-kbps</option>
 							<option value="256">🎙️256-kbps</option>
 						</select >
-						<select id="whipoutvbrcbr" title="Constant audio bitrate or variable audio bitrate" >
+						<select id="whipoutvbrcbr" title="Which audio bitrate target would you prefer?" >
 							<option value="cbr" selected>🎙️CBR</option>
 							<option value="vbr">🎙️VBR</option>
 						</select >
-						<select id="whipoutdenoise" title="Remove background noise, but may limit audio quality" >
+						<select id="whipoutdenoise" title="Which audio bitrate target would you prefer?" >
 							<option value="1" selected>🎙️Denoise On</option>
 							<option value="0">🎙️Denoise Off</option>
 						</select >
-						<select id="whipoutautogain" title="Let the browser control the mic's gain automatically" >
+						<select id="whipoutautogain" title="Which audio bitrate target would you prefer?" >
 							<option value="1" selected>🎙️Auto Gain On</option>
 							<option value="0">🎙️Auto Gain Off</option>
 						</select >
-						<select id="whipoutstereo" title="Stereo audio or mono; must have denoise off for this to work." >
+						<select id="whipoutstereo" title="Which audio bitrate target would you prefer?" >
 							<option value="1" selected>🎙️Stereo</option>
 							<option value="0">🎙️Mono</option>
 						</select >
@@ -2447,14 +2417,6 @@
 			</div>
 		</div>
 		
-		<div id="callerMenu" class="hidden">
-			<button><i class="las la-phone"></i> Hang up</button>
-		</div>
-		
-		<div id="progressContainer" class="hidden">
-			<div id="progressBar"></div>
-		</div>
-		
 		<div id="signalMeterTemplate" class="signal-meter hidden" data-cpu="0" data-level="0">
 			<i class="las la-signal"></i>
 			<i class="las la-fire-alt"></i>
@@ -2520,18 +2482,18 @@
 			<br />
 			<ul id="languagesList" style="list-style-type: none; margin: 0;">
 				<li><a onclick="changeLg('en');toggle(document.getElementById('languages'));" style="cursor: pointer;">English</a></li>
-				<li><a onclick="changeLg('de');toggle(document.getElementById('languages'));" style="cursor: pointer;" data-tz="Europe/Berlin">German</a></li>
+				<li><a onclick="changeLg('ru');toggle(document.getElementById('languages'));" style="cursor: pointer;" data-tz="Europe/Moscow">Russian</a></li>
 				<li><a onclick="changeLg('fr');toggle(document.getElementById('languages'));" style="cursor: pointer;" data-tz="Europe/Paris">French</a></li>
-				<li><a onclick="changeLg('it');toggle(document.getElementById('languages'));" style="cursor: pointer;" data-tz="Europe/Rome">Italian</a></li>
-				<li><a onclick="changeLg('es');toggle(document.getElementById('languages'));" style="cursor: pointer;" data-tz="Europe/Madrid">Spanish</a></li>
 				<li><a onclick="changeLg('pt');toggle(document.getElementById('languages'));" style="cursor: pointer;" data-tz="Europe/Lisbon;">Portuguese (Europe)</a></li>
 				<li><a onclick="changeLg('pt-br');toggle(document.getElementById('languages'));" style="cursor: pointer;" data-tz="America/Araguaina">Portuguese (Brazil)</a></li>
+				<li><a onclick="changeLg('it');toggle(document.getElementById('languages'));" style="cursor: pointer;" data-tz="Europe/Rome">Italian</a></li>
+				<li><a onclick="changeLg('de');toggle(document.getElementById('languages'));" style="cursor: pointer;" data-tz="Europe/Berlin">German</a></li>
+				<li><a onclick="changeLg('es');toggle(document.getElementById('languages'));" style="cursor: pointer;" data-tz="Europe/Madrid">Spanish</a></li>
 				<li><a onclick="changeLg('nl');toggle(document.getElementById('languages'));" style="cursor: pointer;" data-tz="Europe/Amsterdam">Dutch</a></li>
 				<li><a onclick="changeLg('tr');toggle(document.getElementById('languages'));" style="cursor: pointer;" data-tz="Europe/Istanbul">Turkish</a></li>
 				<li><a onclick="changeLg('ja');toggle(document.getElementById('languages'));" style="cursor: pointer;" data-tz="Asia/Tokyo">Japanese</a></li>
 				<li><a onclick="changeLg('cn');toggle(document.getElementById('languages'));" style="cursor: pointer;" data-tz="Asia/China">Chinese (中文)</a></li>
 				<li><a onclick="changeLg('cs');toggle(document.getElementById('languages'));" style="cursor: pointer;" data-tz="Europe/Prague">Czech</a></li>
-				<li><a onclick="changeLg('ru');toggle(document.getElementById('languages'));" style="cursor: pointer;" data-tz="Europe/Moscow">Russian</a></li>
 				<li><a onclick="changeLg('uk');toggle(document.getElementById('languages'));" style="cursor: pointer;" data-tz="Europe/Ukraine">Ukrainian</a></li>
 				<li><a onclick="changeLg('eu');toggle(document.getElementById('languages'));" style="cursor: pointer;" data-tz="Europe/Euskara">Basque</a></li>
 				<li><a onclick="changeLg('pig');toggle(document.getElementById('languages'));" style="cursor: pointer;">Pig Latin</a></li>
@@ -2569,22 +2531,9 @@
 			
 			console.log("->> Note: Do not paste code into this console unless from a trusted source <<--")
 
-			
-			////   Are you wanting general site password protection for your self-deployment?
-			////   * You can also use HTTP Basic Authorization within your Web Server for more security
-			////   * You can also check out Cloudflare's Zero Trust gateway for Oauth/SSO protection
-			////   * Or if you want to add low-effort password to the site, you can uncomment the following code:
-			// var pass = prompt("Enter your password");
-			// if (pass!=="mypassword"){
-			//   document.body.innerHTML = "";
-			// }
-			//// End of low-effort password code
-			
-			//// Another option simple option is to check for a URL parameter, and if none present, blank the page. You'll need to use URL parameters then to access the page.
-			// if (!window.location.search){document.body.innerHTML = "";} // uncomment this line, if you wish to try it.
-			
+		
 			var session = WebRTC.Media; // session is a required global variable if configuring manually. Run before loading main.js but after webrtc.js.
-			session.version = "25.0";
+			session.version = "24.2b";
 			session.streamID = session.generateStreamID(); // randomly generates a streamID for this session. You can set your own programmatically if needed
 			
 			session.defaultPassword = "someEncryptionKey123"; // Change this password if self-deploying for added security/privacy
@@ -2695,17 +2644,33 @@
 			// session.darkmode = false; // enable or disable the dark style theme as the default
 			// session.defaultBackgroundImages = ["./media/bg_sample1.webp", "./media/bg_sample2.webp"]; // for &effects=5 (virtual backgrounds)
 			// session.hidehome = true; // If used, 'hide home' will make the landing page inaccessible, along with hiding a few go-home elements.
-			// session.language="auto"; // "blank" is another option, or a specific language, like "de" or "pt-br"
 			// session.record = false; // uncomment to block users from being able to record via vdo.ninja's built in recording function
 			// session.whipServerURL = "wss://whip.vdo.ninja"; // If you deploy your own whip websocket service
 			
-			// session.GDRIVE_CLIENT_ID = "877199999934-67tq62xxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com"; // get your own id/key from Google Cloud
-			// session.GDRIVE_API_KEY = 'AINNNNNNNNNNNNNNN-39s99999999999999999'; // lets you upload to google drive if self hosting.
-			
-			// session.decrypted = session.decodeInvite("U2FsdGVkX1+d58DFIHoO3EQZSuX86ch4PqW2ouztnJ0="); // get a code from invite.cam
+			/////// ----- Example code for custom landing page, which asks for room and pass
+			// session.screenshare = true; // screen share mode
+			// var roomName = document.createElement("input");
+			// roomName.type = "text";
+			// roomName.placeholder = "Room name";
+			// getById("screenshare").replaceWith(roomName);
+			// var password = document.createElement("input");
+			// password.type = "text";
+			// password.placeholder = "Password";
+			// roomName.parentNode.appendChild(password);
+			// password.onchange = function(e){
+			//   session.password = e.target.value || session.defaultPassword;
+			// }
+			// roomName.onchange = function(e){
+			//   session.roomid = e.target.value;
+			// }
+			////////////// ---- end of custom landing page
 			
 		</script>
-		<script type="text/javascript" crossorigin="anonymous" id="lib-js" src="./lib.js?ver=1141"></script>
-		<script type="text/javascript" crossorigin="anonymous" id="main-js" src="./main.js?ver=849"></script>
+		<script type="text/javascript" crossorigin="anonymous" id="lib-js" src="./lib.js?ver=1030"></script>
+		<!-- 
+		// If you wish to change branding, blank offers a good clean start.
+		<script type="text/javascript" id="main-js" src="./main.js" data-translation="blank"></script>
+		-->
+		<script type="text/javascript" crossorigin="anonymous" id="main-js" src="./main.js?ver=767"></script>
 	</body>
 </html>
