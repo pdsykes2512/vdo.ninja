@@ -36,6 +36,9 @@
 		box-shadow:  20px 20px 60px #273a4e, -20px -20px 60px #354e6a;
 		scrollbar-color:#666 #201c29;
 	}
+	textarea {
+		width:100%;
+	}
 	iframe {
 		border: 0;
 		padding: 0;
@@ -651,7 +654,64 @@
 		border-radius: 0px;
 		display:none;
 	}
-	
+	.toggle-container {
+		display: flex;
+		align-items: center;
+		margin-bottom: 15px;
+	}
+
+	.switch {
+		position: relative;
+		display: inline-block;
+		width: 60px;
+		height: 34px;
+		margin-right: 10px;
+	}
+
+	.switch input {
+		opacity: 0;
+		width: 0;
+		height: 0;
+	}
+
+	.slider {
+		position: absolute;
+		cursor: pointer;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: #ccc;
+		transition: .4s;
+	}
+
+	.slider:before {
+		position: absolute;
+		content: "";
+		height: 26px;
+		width: 26px;
+		left: 4px;
+		bottom: 4px;
+		background-color: white;
+		transition: .4s;
+	}
+
+	input:checked + .slider {
+		background-color: #2196F3;
+	}
+
+	input:checked + .slider:before {
+		transform: translateX(26px);
+	}
+
+	.slider.round {
+		border-radius: 34px;
+	}
+
+	.slider.round:before {
+		border-radius: 50%;
+	}
+
 	.modal {
 	  position: fixed; 
 	  padding-top: 50px;
@@ -1071,6 +1131,37 @@
 			<button class='close-btn'>Close</button>
 		</div>
 	</div>
+	<div id="exportModal" class="hidden modal">
+		<div class="modal-content">
+			<span class="close-btn">&times;</span>
+			<h2>Export Layout</h2>
+			
+			<div class="toggle-container">
+				<label class="switch">
+					<input type="checkbox" id="dataToggle" onchange="copyJSON()">
+					<span class="slider round"></span>
+				</label>
+				<span id="toggleLabel">Pre-process layout to contain current stream IDs instead of slots.<br />
+				<small>Useful if there is no assigned slots or if you wish to use directly with a standalone scene-link. Maps based on stream IDs instead of slot values.</small></span>
+				
+			</div>
+			
+			<h3>JSON Format</h3><small>For manual editing</small>
+			<textarea id="jsonExport" rows="3" readonly></textarea>
+			<button onclick="copyToClipboard('jsonExport')">Copy JSON</button>
+			
+			<h3>URL-Encoded Format</h3><small>For use as a URL parameter's value or with the layout API</small>
+			<textarea id="urlEncodedExport" rows="3" readonly></textarea>
+			<button onclick="copyToClipboard('urlEncodedExport')">Copy URL Encoded</button>
+			
+			<h3>Base64 Format</h3><small>Longer than URL-encoded, but less prone to issues</small>
+			<textarea id="base64Export" rows="3" readonly></textarea>
+			<button onclick="copyToClipboard('base64Export')">Copy Base64</button>
+			
+			<br /><br />
+			<button class='close-btn'>Close</button>
+		</div>
+	</div>
 	<div class="gone" >
 		<!-- This image is used when dragging elements -->
 		<img src="./media/favicon-32x32.png" style="pointer-events: none;" id="dragImage" loading="lazy" />
@@ -1105,8 +1196,11 @@
 	function warnlog(msg){
 		console.warn(msg);
 	}
-	function log(msg){
-		console.log(msg);
+	function log(msg) {
+		const stack = new Error().stack;
+		const callerLine = stack.split("\n")[2]; // Get the second line of the stack trace
+		const lineNumber = callerLine.match(/:(\d+):\d+\)?$/)[1]; // Extract the line number
+		console.log(msg, "Line: "+ lineNumber);
 	}
 	
 	function getById(id){
@@ -1245,6 +1339,10 @@
 		roomname = urlParams.get("room") || urlParams.get("r") ||urlParams.get("dir") || urlParams.get("director");
 		roomname = sanitizeRoomName(roomname);
 	}
+	if (urlParams.has("updateonslotchange")){
+		updateOnSlotChange = true;
+	}
+	
 	var savedLastRoom = getStorage("savedRoom");
 	
 	if (savedLastRoom){
@@ -2227,6 +2325,9 @@
 	}
 	
 	var injectCSS = `
+		#directorLinks1,#directorLinks2 {
+			display:none!important;
+		}
 		.directorsgrid .vidcon {
 			display: inline-block !important;
 			width: 293.7px !important;
@@ -2676,6 +2777,7 @@
 			}
 			
 			if ("action" in e.data){
+				
 				if (e.data.action === "widget-src"){
 					if (e.data.value){
 						widgetSrc = true;
@@ -2684,7 +2786,6 @@
 					}
 					changeAspectRatio(aspectRatio,false);
 				}
-				
 				
 				if (e.data.action === "slot-updated"){
 					for (var i in guestPositions){
@@ -2699,12 +2800,50 @@
 				}
 			
 				if (e.data.action === "layout-updated"){
-					console.log(e.data);
+					log(e.data);
+					let value = e.data.value;
+					if (parseInt(value) == value) {
+						value = parseInt(value);
+						if (value == 0) {
+							value = false;
+						} else {
+							value -= 1;
+						}
+						lastLayoutRaw = null;
+					} else if (typeof value === "string") {
+						try {
+							if (checkType(JSON.parse(value)) === "Array") {
+								lastLayoutRaw = value || [];
+								lastLayout = null;
+								var layoutButtons = document.querySelectorAll(".pressed");
+								for (var i = 0;i<layoutButtons.length;i++){
+									layoutButtons[i].classList.remove("pressed");
+								}
+							} else if (checkType(JSON.parse(value)) === "Object") {
+								//lastLayoutRaw = null;
+								currentLayout = value;
+							}
+						} catch(e){
+							warnlog(e);
+						}
+						
+					} else if (checkType(value) === "Array") {
+						lastLayoutRaw = value || [];
+						lastLayout = null;
+						var layoutButtons = document.querySelectorAll(".pressed");
+						for (var i = 0;i<layoutButtons.length;i++){
+							layoutButtons[i].classList.remove("pressed");
+						}
+					} else if (checkType(value) === "Object") {
+						//lastLayoutRaw = null;
+						currentLayout = value;
+					}
 				}
 			
 				if (e.data.action === "layout-index"){
+					log(e.data);
 					if ("value" in e.data){
-						console.log(e.data);
+						
 						var idx = parseInt(e.data.value) || 0;
 						if (!idx){
 							var ele = document.getElementById("automix");
@@ -2717,15 +2856,25 @@
 							layoutButtons[i].classList.remove("pressed");
 						}
 						if (ele){
-							ele.classList.add("pressed");
-							ele.classList.add("shake");
-							setTimeout(function(ele){ele.classList.remove("shake");},500,ele);
+							try {
+								let lll = ele.querySelector("canvas").layout || null;
+								console.warn(lll);
+								remoteActivate(false, lll, true);
+								ele.classList.add("pressed");
+								ele.classList.add("shake");
+								setTimeout(function(ele){ele.classList.remove("shake");},500,ele);
+							} catch(e){
+								errorlog(e);
+							}
+						} else {
+							errorlog("No ele found");
 						}
 						
 					}
 				}
 				
 				if (e.data.action && (e.data.action == "scene-connected")){
+					log(e.data);
 					if (lastLayout && lastLayout.scene == e.data.value){
 						var layoutIssue = {};
 						layoutIssue.layout = lastLayout.layout;
@@ -2738,6 +2887,7 @@
 				}
 				
 				if (e.data.action && (e.data.action == "guest-connected")){
+					log(e.data);
 					if (lastLayout){
 						var layoutIssue = {};
 						layoutIssue.layout = lastLayout.layout;
@@ -2749,6 +2899,7 @@
 				}
 				
 				if (e.data.action && (e.data.action == "view-connection")){
+					log(e.data);
 					if (!e.data.value && e.data.streamID){
 						
 						for (var i in guestPositions){
@@ -2958,12 +3109,15 @@
 		document.querySelectorAll(".inviteLink").forEach(ele=>{
 			if (ele.tagName == "A"){
 				ele.href = inviteURL
+				ele.title = "Copy link to clipboard";
+				ele.onclick = function(evt){copyFunction(inviteURL, evt);};
 			} else if (document.getElementById("obfuscateInvites").checked){
 				ele.innerHTML = inviteURL;
+				ele.onclick = function(evt){copyFunction(inviteURL, evt);};
+				ele.title = "Copy link to clipboard";
 			} else if (ele.tagName == "I"){
 				ele.innerHTML = "URL + ?room="+roomname+additional+additionalParams;
 			}
-			ele.onclick = function(evt){copyFunction(this, evt);};
 		});
 	
 		if (event){
@@ -3742,29 +3896,51 @@
 		}
 		return combined;
 	}
+	
+	function checkType(value) {
+	  if (Array.isArray(value)) {
+		return 'Array';
+	  } else if (typeof value === 'object' && value !== null) {
+		return 'Object';
+	  } else {
+		return 'Neither an Array nor an Object';
+	  }
+	}
    
-   function remoteActivate(event=null, layout=null){
+    function remoteActivate(event=null, layout=null, fake=false){
    
-		if (event.target && event.target.layout && layout===null){
+		if (event && event.target && ("layout" in event.target) && layout===null){
 			layout = event.target.layout;
 			var layoutButtons = document.querySelectorAll(".pressed");
 			for (var i = 0;i<layoutButtons.length;i++){
 				layoutButtons[i].classList.remove("pressed");
 			}
 			event.target.parentNode.classList.add("pressed");
+		} else if (layout){
+			var layoutButtons = document.querySelectorAll(".pressed");
+			for (var i = 0;i<layoutButtons.length;i++){
+				layoutButtons[i].classList.remove("pressed");
+			}
 		}
 		
-		
+		log(layout);
 		lastLayoutRaw = layout;
 		
 		var combined = false;
 		if (layout){
-			layout = JSON.parse(layout);
+			try{
+				layout = JSON.parse(layout);
+			} catch(e){}
 			combined = combinedLayout(layout);
+		} else if (currentLayout && (layout===null)){
+			combined = currentLayout;
+		} else {
+			currentLayout = combined; // global current state
 		}
 		
-		currentLayout = combined; // global current state
 		lastLayout = {"scene":"0", "layout":combined};
+		
+		if (fake){return;}
 		
 		if (event.target && event.target.obsSceneName && syncOBS){
 			var obsCommand = {"action": "setCurrentScene", "value": event.target.obsSceneName};
@@ -4129,9 +4305,47 @@
 			layout.push(ele);
 		}
 		log(layout);
+		
 		var combined = combinedLayout(layout);
 		
-		prompt("Layout as URL-encoded JSON. StreamIDs are based on current and default values.", encodeURIComponent(JSON.stringify(combined)));
+		const isLayout = !document.getElementById('dataToggle').checked;
+		const data = isLayout ? layout : combined;
+		
+		document.getElementById('toggleLabel').textContent = isLayout ? 'Layout' : 'Combined';
+		
+		const jsonVersion = JSON.stringify(data);
+		document.getElementById('jsonExport').value = jsonVersion;
+		
+		const base64Version = btoa(jsonVersion);
+		document.getElementById('base64Export').value = base64Version;
+		
+		const urlEncodedExport = encodeURIComponent(JSON.stringify(data));
+		document.getElementById('urlEncodedExport').value = urlEncodedExport;
+		
+		document.getElementById("exportModal").classList.remove("hidden");
+	}
+
+	function copyToClipboard(elementId) {
+		const copyText = document.getElementById(elementId);
+		copyText.select();
+		copyText.setSelectionRange(0, 99999); // For mobile devices
+		document.execCommand("copy");
+		
+		// Optional: Show a message that the text was copied
+		alert("Copied to clipboard");
+	}
+
+	function copyToClipboard(elementId) {
+		const copyText = document.getElementById(elementId);
+		copyText.select();
+		copyText.setSelectionRange(0, 99999); // For mobile devices
+		document.execCommand("copy");
+		
+		alert("Copied to clipboard");
+	}
+
+	function closeExportModal() {
+		document.getElementById("exportModal").classList.add("hidden");
 	}
 	
 	function setobsSceneName(){
